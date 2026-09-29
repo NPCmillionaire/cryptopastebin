@@ -1,1 +1,0 @@
-{"version":3,"file":"languages.d.ts","sourceRoot":"","sources":["../src/languages.ts"],"names":[],"mappings":"AAAA;;;;;;;;GAQG;AACH,OAAO,IAAI,MAAM,uBAAuB,CAAC;AAgCzC,+EAA+E;AAC/E,eAAO,MAAM,SAAS,EAAE,aAAa,CAAC,SAAS,CAAC,MAAM,EAAE,MAAM,CAAC,CA8B9D,CAAC;AAIF,wBAAgB,eAAe,IAAI,OAAO,IAAI,CAW7C;AAED,wBAAgB,eAAe,CAAC,IAAI,EAAE,MAAM,GAAG,IAAI,GAAG,OAAO,CAE5D"}
