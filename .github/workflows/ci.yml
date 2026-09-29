@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push: { branches: [main] }
+  pull_request:
+
+jobs:
+  verify:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+
+      - uses: actions/setup-node@v5
+        with:
+          node-version: '22'
+          cache: npm
+
+      - run: npm ci
+
+      - name: Typecheck (strict, all packages)
+        run: npm run typecheck
+
+      - name: Crypto tests
+        run: npm test
+
+      - name: Worker tests
+        run: npm run test:api
+
+      - name: Static leak audit
+        run: npm run audit:leaks
+
+      - name: Build
+        run: npm run build
+
+      # The browser suite is the only place the end-to-end claim — that the key is
+      # never transmitted — is actually checked, so it runs against the real
+      # handler in real Chromium rather than being treated as optional.
+      - name: Install Chromium
+        run: npx playwright install --with-deps chromium
+
+      - name: End-to-end (real browser)
+        run: |
+          node scripts/local-server.mjs 8788 &
+          for i in $(seq 1 30); do
+            curl -sf http://127.0.0.1:8788/api/config >/dev/null && break
+            sleep 1
+          done
+          node scripts/e2e.mjs

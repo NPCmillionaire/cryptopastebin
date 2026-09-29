@@ -1,0 +1,34 @@
+{
+  "name": "cryptopaste",
+  "private": true,
+  "version": "0.1.0",
+  "description": "Zero-knowledge pastebin with post-quantum hybrid cryptography",
+  "type": "module",
+  "license": "MIT",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "build": "npm run build -w @cryptopaste/crypto && tsc -b apps/api && npm run build -w @cryptopaste/web",
+    "test": "npm run test -w @cryptopaste/crypto",
+    "test:api": "npm run test -w @cryptopaste/api",
+    "typecheck": "tsc -b --pretty packages/crypto apps/api apps/web",
+    "dev:api": "npm run dev -w @cryptopaste/api",
+    "dev:web": "npm run dev -w @cryptopaste/web",
+    "audit:leaks": "node scripts/audit-leaks.mjs",
+    "e2e": "node scripts/e2e.mjs",
+    "serve": "node scripts/local-server.mjs 8788",
+    "clean": "rm -rf packages/*/dist apps/*/dist apps/web/dist-types && find . -name '*.tsbuildinfo' -not -path '*/node_modules/*' -delete",
+    "rebuild": "npm run clean && npm run build"
+  },
+  "devDependencies": {
+    "@types/node": "^26.6.3",
+    "playwright": "^1.57.0",
+    "typescript": "^5.9.2",
+    "vitest": "^3.2.4"
+  }
+}

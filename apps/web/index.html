@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="referrer" content="no-referrer" />
+    <meta name="robots" content="noindex, nofollow, noarchive" />
+    <title>CryptoPaste</title>
+    <meta
+      name="description"
+      content="A pastebin that encrypts in your browser. The server stores ciphertext and never receives the key."
+    />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3E%3Ctext y='13' font-size='13'%3E%F0%9F%94%90%3C/text%3E%3C/svg%3E" />
+    <script type="module" src="/src/main.ts"></script>
+  </head>
+  <body>
+    <noscript>
+      <p class="noscript">
+        CryptoPaste encrypts and decrypts entirely in your browser, so it cannot work without
+        JavaScript. There is no server-side fallback by design: a fallback would mean sending your
+        plaintext to the server.
+      </p>
+    </noscript>
+    <div id="app" aria-live="polite"></div>
+  </body>
+</html>

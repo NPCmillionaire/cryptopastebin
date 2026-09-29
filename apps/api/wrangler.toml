@@ -1,0 +1,35 @@
+name = "cryptopaste"
+main = "src/index.ts"
+compatibility_date = "2026-09-01"
+compatibility_flags = ["nodejs_compat"]
+
+# The static client. Assets are served for any path the Worker does not handle.
+[assets]
+directory = "../web/dist"
+binding = "ASSETS"
+# The client is a single-page app: unknown paths must return index.html so that
+# /p/<id> loads the viewer instead of a 404.
+not_found_handling = "single-page-application"
+
+[[d1_databases]]
+binding = "DB"
+database_name = "cryptopaste"
+database_id = "REPLACE_WITH_YOUR_D1_ID"
+migrations_dir = "migrations"
+
+[[r2_buckets]]
+binding = "BLOBS"
+bucket_name = "cryptopaste-blobs"
+
+# Expired pastes, orphaned R2 objects, and stale rate-limit buckets are swept
+# every minute. Expiry is therefore accurate to within a minute, and a paste is
+# unreadable the instant it expires regardless — the read query filters on
+# expires_at, so the sweep only reclaims space.
+[triggers]
+crons = ["* * * * *"]
+
+[observability]
+enabled = true
+
+# No [vars] block holds anything secret. RATE_LIMIT_KEY is set with:
+#   wrangler secret put RATE_LIMIT_KEY
