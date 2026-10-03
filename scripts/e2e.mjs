@@ -18,18 +18,39 @@ import { existsSync, readdirSync } from 'node:fs';
 
 const BASE = process.env.E2E_BASE ?? 'http://127.0.0.1:8788';
 
+/**
+ * Locate a Chromium to drive.
+ *
+ * Playwright's own resolution is correct wherever Playwright manages the
+ * download — a CI runner after `playwright install`, a developer's machine — so
+ * returning `undefined` is the right answer there, not a failure. The lookup
+ * below exists only for environments that ship a preinstalled browser and point
+ * at it with PLAYWRIGHT_BROWSERS_PATH, where the layout differs between builds.
+ *
+ * It must never throw. An earlier version read a hard-coded sandbox path
+ * directly, which crashed the whole suite on any machine that did not happen to
+ * have that directory — the browser was there, Playwright would have found it,
+ * and the helper meant to help was the only thing in the way.
+ */
 function findChromium() {
   if (process.env.CHROMIUM_PATH) return process.env.CHROMIUM_PATH;
-  const root = process.env.PLAYWRIGHT_BROWSERS_PATH ?? '/opt/pw-browsers';
-  const dirs = readdirSync(root)
-    .filter((d) => d.startsWith('chromium-'))
-    .sort()
-    .reverse();
-  for (const dir of dirs) {
-    for (const sub of ['chrome-linux64/chrome', 'chrome-linux/chrome']) {
-      const candidate = `${root}/${dir}/${sub}`;
-      if (existsSync(candidate)) return candidate;
+
+  const root = process.env.PLAYWRIGHT_BROWSERS_PATH;
+  if (root === undefined || root === '0' || !existsSync(root)) return undefined;
+
+  try {
+    const dirs = readdirSync(root)
+      .filter((d) => d.startsWith('chromium-'))
+      .sort()
+      .reverse();
+    for (const dir of dirs) {
+      for (const sub of ['chrome-linux64/chrome', 'chrome-linux/chrome', 'chrome-mac/Chromium.app/Contents/MacOS/Chromium']) {
+        const candidate = `${root}/${dir}/${sub}`;
+        if (existsSync(candidate)) return candidate;
+      }
     }
+  } catch {
+    // Unreadable or unexpected layout: fall back to Playwright's resolution.
   }
   return undefined;
 }
